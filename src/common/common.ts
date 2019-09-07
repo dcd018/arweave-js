@@ -65,7 +65,7 @@ export default class Arweave {
     };
   }
 
-  public cancelAll(msg: String) {
+  public cancelAll(msg: string) {
     this.api.cancelAll(msg);
   }
 
