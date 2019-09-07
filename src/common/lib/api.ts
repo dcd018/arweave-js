@@ -1,4 +1,4 @@
-import Axios, { AxiosResponse, AxiosRequestConfig, AxiosInstance } from "axios";
+import Axios, { AxiosResponse, AxiosRequestConfig, AxiosInstance, CancelToken } from "axios";
 
 export interface ApiConfig {
   host?: string;
@@ -14,9 +14,11 @@ export default class Api {
   public readonly METHOD_POST = "POST";
 
   public config!: ApiConfig;
+  public cancelToken!: CancelToken;
 
   constructor(config: ApiConfig) {
     this.applyConfig(config);
+    this.applyCancelToken();
   }
 
   public applyConfig(config: ApiConfig) {
@@ -25,6 +27,15 @@ export default class Api {
 
   public getConfig() {
     return this.config;
+  }
+
+  public applyCancelToken() {
+    this.cancelToken = CancelToken.source();
+  }
+
+  public cancelAll(msg: String) {
+    this.cancelToken.cancel(msg);
+    this.applyCancelToken();
   }
 
   private mergeDefaults(config: ApiConfig): ApiConfig {
@@ -46,6 +57,9 @@ export default class Api {
     config?: AxiosRequestConfig
   ): Promise<AxiosResponse> {
     try {
+      if (!config.cancelToken) {
+        config.cancelToken = this.cancelToken;
+      }
       return await this.request().get(endpoint, config);
     } catch (error) {
       if (error.response && error.response.status) {
@@ -62,6 +76,9 @@ export default class Api {
     config?: AxiosRequestConfig
   ): Promise<AxiosResponse> {
     try {
+      if (!config.cancelToken) {
+        config.cancelToken = this.cancelToken;
+      }
       return await this.request().post(endpoint, body, config);
     } catch (error) {
       if (error.response && error.response.status) {

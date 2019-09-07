@@ -65,6 +65,10 @@ export default class Arweave {
     };
   }
 
+  public cancelAll(msg: String) {
+    this.api.cancelAll(msg);
+  }
+
   public async createTransaction(
     attributes: Partial<CreateTransactionInterface>,
     jwk: JWKInterface
