@@ -57,7 +57,7 @@ export default class Api {
     config?: AxiosRequestConfig
   ): Promise<AxiosResponse> {
     try {
-      if (!config.cancelToken) {
+      if (config && !config.cancelToken) {
         config.cancelToken = this.cancelTokenSource.token;
       }
       return await this.request().get(endpoint, config);
@@ -76,7 +76,7 @@ export default class Api {
     config?: AxiosRequestConfig
   ): Promise<AxiosResponse> {
     try {
-      if (!config.cancelToken) {
+      if (config && !config.cancelToken) {
         config.cancelToken = this.cancelTokenSource.token;
       }
       return await this.request().post(endpoint, body, config);
