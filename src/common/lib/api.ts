@@ -1,4 +1,4 @@
-import Axios, { AxiosResponse, AxiosRequestConfig, AxiosInstance, CancelToken } from "axios";
+import Axios, { AxiosResponse, AxiosRequestConfig, AxiosInstance, CancelTokenSource } from "axios";
 
 export interface ApiConfig {
   host?: string;
@@ -14,11 +14,11 @@ export default class Api {
   public readonly METHOD_POST = "POST";
 
   public config!: ApiConfig;
-  public cancelToken!: CancelToken;
+  public cancelTokenSource!: CancelTokenSource;
 
   constructor(config: ApiConfig) {
     this.applyConfig(config);
-    this.applyCancelToken();
+    this.applyCancelTokenSource();
   }
 
   public applyConfig(config: ApiConfig) {
@@ -29,13 +29,13 @@ export default class Api {
     return this.config;
   }
 
-  public applyCancelToken() {
-    this.cancelToken = Axios.CancelToken.source();
+  public applyCancelTokenSource() {
+    this.cancelTokenSource = Axios.CancelToken.source();
   }
 
   public cancelAll(msg: String) {
-    this.cancelToken.cancel(msg);
-    this.applyCancelToken();
+    this.cancelTokenSource.cancel(msg);
+    this.applyCancelTokenSource();
   }
 
   private mergeDefaults(config: ApiConfig): ApiConfig {
@@ -58,7 +58,7 @@ export default class Api {
   ): Promise<AxiosResponse> {
     try {
       if (!config.cancelToken) {
-        config.cancelToken = this.cancelToken;
+        config.cancelToken = this.cancelTokenSource.token;
       }
       return await this.request().get(endpoint, config);
     } catch (error) {
@@ -77,7 +77,7 @@ export default class Api {
   ): Promise<AxiosResponse> {
     try {
       if (!config.cancelToken) {
-        config.cancelToken = this.cancelToken;
+        config.cancelToken = this.cancelTokenSource.token;
       }
       return await this.request().post(endpoint, body, config);
     } catch (error) {
