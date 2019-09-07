@@ -33,7 +33,7 @@ export default class Api {
     this.cancelTokenSource = Axios.CancelToken.source();
   }
 
-  public cancelAll(msg: String) {
+  public cancelAll(msg: string) {
     this.cancelTokenSource.cancel(msg);
     this.applyCancelTokenSource();
   }
